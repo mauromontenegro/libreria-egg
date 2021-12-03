@@ -1,0 +1,228 @@
+<!DOCTYPE html5>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!--HEAD-->
+<head th:replace="/fragments/head :: head"></head>
+<head>
+    <title>Librería EGG - Préstamos</title>
+</head>
+    <body>
+        <div id="pagina">
+<!--NAVIGATION-->
+        <nav th:replace="/fragments/navbar :: nav"></nav>
+            <div id="contenido">
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="bg-dark text-white">Menú Administrativo de Préstamos</h1>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div th:if="${error != null}" class="col-12 alert alert-danger alert-dismissible fade show" id="alert" role="alert">
+                            <!--Este if mostrará el texto en el caso de que aparezca un error.-->
+                            <span th:text="${error}" id="error"></span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div th:if="${success != null}" class="col-12 alert alert-success alert-dismissible fade show" id="alert" role="alert">
+                            <!--Este if mostrará el texto en el caso de que salga todo bien.-->
+                            <span th:text="${success}" id="success"></span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <div class="container" id="menu">
+                            <button class="btn" id="btn-orange" type="button" data-toggle="collapse" data-target="#collapse1"
+                                    aria-expanded="false" aria-controls="collapseExample">
+                                <i class="bi bi-plus-circle-dotted"></i> Nuevo Préstamo
+                            </button>
+                            <button class="btn" id="btn-orange" type="button" data-toggle="collapse" data-target="#collapsehelp"
+                                    aria-expanded="false" aria-controls="collapseExample">
+                                <span><i class="bi bi-question-circle text-white"> </i></span>
+                            </button>
+                        </div>
+                        <div class="collapse card card-body alert alert-dismissible text-justify alert-primary" id="collapsehelp" role="alert">
+                            <ul style="list-style-type:disc;">
+                                <li><strong>Nuevo Préstamo</strong></li>
+                                <ul>
+                                    <li>En ésta sección podrá cargar todos los datos necesarios para registrar un Préstamo en la base de datos.</li>
+                                </ul>
+                            </ul>
+                            <ul style="list-style-type:disc;">
+                                <li><strong>Listar Préstamos + Gestionar</strong></li>
+                                <ul>
+                                    <li><strong>Listar Préstamos</strong> en ésta sección se listan datos de todos los Préstamos activos registrados en la base de datos.</li>
+                                    <li><strong>Gestionar:</strong> se incluyen las funciones de "Registrar devolución", "Renovar" y "Eliminar".</li>
+                                    <ul>
+                                        <li>Registrar devolución: no se puede deshacer. Si lo que se busca es modificar las fechas de Préstamo y Devolución, optar por "Renovar". Si el Libro o el Usuario se eligieron erróneamente, hay que eliminar el préstamo y crear uno nuevo.</li>
+                                        <li>Renovar: permite modificar las fechas de Préstamo y Devolución.</li>
+                                        <li>Eliminar: borra el registro del Préstamo de la base de datos.</li>
+                                    </ul>
+                                </ul>
+                            </ul>
+                            <ul style="list-style-type:disc;">
+                                <li><strong>Devoluciones</strong></li>
+                                <ul>
+                                    <li>En ésta sección se listan datos de todos los Préstamos dados de baja registrados en la base de datos.</li>
+                                </ul>
+                            </ul>
+                            <button type="button" class="close" data-toggle="collapse" data-target="#collapsehelp"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div><br>
+                        <br><div th:if="${usuarioPrestamo} != null" class="alert alert-info" role="alert">
+                                <div><img class="img-fluid rounded-circle" th:if="${usuarioPrestamo.foto != null}" th:src="${'/foto/usuario/' + usuarioPrestamo.id}" alt="" id="profile-photo"></img></div>
+                                <div>Está viendo sólo los Préstamos del Usuario <br><strong><span th:text="${usuarioPrestamo.nombre} + ' ' + ${usuarioPrestamo.apellido}"></span></strong></div>
+                            <div><a href="/admin/prestamos/admin-prestamos"><button class="btn btn-info">Ver todos</button></a></div>
+                        </div>
+                        <div th:if="${usuarioSelected} != null" class="collapse-show" id="collapse1">
+                            <div class="card card-body alert alert-dismissible bg-dark text-white" role="alert">
+                                Ingrese los datos solicitados a continuación:
+                                <div class="registry-form col-12 text-justify bg-dark text-white">
+                                    <div class="col-12 text-justify">
+                                        <form action="/admin/prestamos/registrar-prestamo" method="POST" enctype="multipart/form-data">
+
+                                            <label>Fecha de Préstamo (alta)</label>
+                                            <input type="date" class="form-control" name="fechaPrestamo" th:value="${fechaPrestamo}"/><br>
+
+                                            <label>Fecha de Devolución</label>
+                                            <input type="date" class="form-control" name="fechaDevolucion" th:value="${fechaDevolucion}"/><br>
+                                            <hr>
+                                            <label>Libro</label>
+                                             <select class="form-control custom-select" name="idLibro">
+                                                <option selected disabled value="">Seleccionar...</option>
+                                                <option th:each="libro : ${libros}" th:value="${libro.id}" th:text="${libro.titulo} + ' (' + ${libro.ejemplaresRestantes} + ' disponible/s)'"></option>
+                                            </select>
+                                            <small id="idLibroHelp" class="form-text text-muted">Libro registrado en nuestra base de datos.</small><br>
+
+                                            <hr>
+                                            <label>Usuario</label>
+                                             <select class="form-control custom-select" name="idUsuario">
+                                                <option th:if="${usuarioSelected} == null" selected disabled value="">Seleccionar...</option>
+                                                <option th:if="${usuarioSelected} != null" selected th:value="${usuarioSelected.id}"><span th:text="${usuarioSelected.nombre} + ' ' + ${usuarioSelected.apellido}"></span></option>
+                                                <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.nombre} + ' ' + ${usuario.apellido}"></option>
+                                            </select>
+                                            <small id="idUsuarioHelp" class="form-text text-muted">Usuario registrado en nuestra base de datos.</small><br>
+                                            
+                                            <p><br><button type="submit" class="btn btn-success">Registrar Préstamo</button></p>
+                                        </form>
+                                    </div>
+                                </div>
+                                <button type="button" class="close" data-toggle="collapse" data-target="#collapse1"
+                                        aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div th:if="${usuarioSelected} == null" class="collapse" id="collapse1">
+                            <div class="card card-body alert alert-dismissible bg-dark text-white" role="alert">
+                                Ingrese los datos solicitados a continuación:
+                                <div class="registry-form col-12 text-justify bg-dark text-white">
+                                    <div class="col-12 text-justify">
+                                        <form action="/admin/prestamos/registrar-prestamo" method="POST" enctype="multipart/form-data">
+
+                                            <label>Fecha de Préstamo (alta)</label>
+                                            <input type="date" class="form-control" name="fechaPrestamo" th:value="${fechaPrestamo}"/><br>
+
+                                            <label>Fecha de Devolución</label>
+                                            <input type="date" class="form-control" name="fechaDevolucion" th:value="${fechaDevolucion}"/><br>
+                                            <hr>
+                                            <label>Libro</label>
+                                             <select class="form-control custom-select" name="idLibro">
+                                                <option selected disabled value="">Seleccionar...</option>
+                                                <option th:each="libro : ${libros}" th:value="${libro.id}" th:text="${libro.titulo} + ' (' + ${libro.ejemplaresRestantes} + ' disponible/s)'"></option>
+                                            </select>
+                                            <small id="idLibroHelp" class="form-text text-muted">Libro registrado en nuestra base de datos.</small><br>
+                                                
+                                            <hr>
+                                            <label>Usuario</label>
+                                             <select class="form-control custom-select" name="idUsuario">
+                                                <option th:if="${usuarioSelected} == null" selected disabled value="">Seleccionar...</option>
+                                                <option th:if="${usuarioSelected} != null" selected th:value="${usuarioSelected.id}"><span th:text="${usuarioSelected.nombre} + ' ' + ${usuarioSelected.apellido}"></span></option>
+                                                <option th:if="${usuarioPrestamo} != null" selected th:value="${usuarioPrestamo.id}"><span th:text="${usuarioPrestamo.nombre} + ' ' + ${usuarioPrestamo.apellido}"></span></option>
+                                                <option th:each="usuario : ${usuarios}" th:value="${usuario.id}" th:text="${usuario.nombre} + ' ' + ${usuario.apellido}"></option>
+                                            </select>
+                                            <small id="idUsuarioHelp" class="form-text text-muted">Usuario registrado en nuestra base de datos.</small><br>
+                                            
+                                            
+                                            <p><br><button type="submit" class="btn btn-success">Registrar Préstamo</button></p>
+                                        </form>
+                                    </div>
+                                </div>
+                                <button type="button" class="close" data-toggle="collapse" data-target="#collapse1"
+                                        aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table-responsive-lg table-hover table-dark table-bordered">
+                        <h3 class="bg-dark text-white">Préstamos activos</h3>
+                        <thead>
+                            <tr class="bg-danger text-white">
+                                <th>ID</th>
+                                <th>Fecha Préstamo</th>
+                                <th>Fecha Devolución</th>
+                                <th>Libro</th>
+                                <th>Usuario</th>
+                                <th>Estado / Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="prestamo : ${prestamosAlta}">
+                                <td th:text="${prestamo.id}"></td>
+                                <td th:text="${prestamo.fechaPrestamo.date} + '/' + ${prestamo.fechaPrestamo.month+1} + '/' + ${prestamo.fechaPrestamo.year+1900}"></td>
+                                <td th:text="${prestamo.fechaDevolucion.date} + '/' + ${prestamo.fechaDevolucion.month+1} + '/' + ${prestamo.fechaDevolucion.year+1900}"></td>
+                                <td th:text="${prestamo.libro.titulo} + ' (' + ${prestamo.libro.autor.nombre} + ' - ' + ${prestamo.libro.anio} +')'"></td>
+                                <td><a th:href="@{/admin/prestamos/admin-prestamos-usuario/__${prestamo.usuario.id}__}"><span th:text="${prestamo.usuario.nombre} + ' ' + ${prestamo.usuario.apellido} + ' (DNI: ' + ${prestamo.usuario.dni} + ')'" th:title="'Ver Préstamos de ' + ${prestamo.usuario.nombre}"></span></a></td>
+                                <td>
+                                    <i th:if="${prestamo.alta == true}" class="bi bi-circle-fill text-success"
+                                       title="Activo"></i>
+                                    <i th:if="${prestamo.alta == false}" class="bi bi-circle-fill text-danger"
+                                       th:title="'Devuelto el ' + ${prestamo.fechaDevolucion.date} + '/' + ${prestamo.fechaDevolucion.month+1} + '/' + ${prestamo.fechaDevolucion.year+1900}"></i>
+                                    <a th:if="${prestamo.alta == true}" th:href="@{/admin/prestamos/modificar-prestamo-datos/__${prestamo.id}__}"><i class="bi bi-arrow-clockwise text-success" title="Renovar"></i></a>
+                                    <a th:if="${prestamo.alta == true}" th:href="@{/admin/prestamos/registrar-devolucion/__${prestamo.id}__}"><i class="bi bi-arrow-down-circle text-danger" title="Registrar Devolución"></i></a>
+                                    <a th:href="@{/admin/prestamos/eliminar-prestamo/__${prestamo.id}__}"><i class="bi bi-x-circle text-danger" title="Eliminar"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table-responsive-lg table-hover table-dark table-bordered">
+                        <h3 class="bg-dark text-white">Devoluciones</h3>
+                        <thead>
+                            <tr class="bg-danger text-white">
+                                <th>ID</th>
+                                <th>Fecha Préstamo</th>
+                                <th>Fecha Devolución</th>
+                                <th>Libro</th>
+                                <th>Usuario</th>
+                                <th>Estado / Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="prestamo : ${prestamosBaja}">
+                                <td th:text="${prestamo.id}"></td>
+                                <td th:text="${prestamo.fechaPrestamo.date} + '/' + ${prestamo.fechaPrestamo.month+1} + '/' + ${prestamo.fechaPrestamo.year+1900}"></td>
+                                <td th:text="${prestamo.fechaDevolucion.date} + '/' + ${prestamo.fechaDevolucion.month+1} + '/' + ${prestamo.fechaDevolucion.year+1900}"></td>
+                                <td th:text="${prestamo.libro.titulo} + ' (' + ${prestamo.libro.autor.nombre} + ' - ' + ${prestamo.libro.anio} +')'"></td>
+                                <td><a th:href="@{/admin/prestamos/admin-prestamos-usuario/__${prestamo.usuario.id}__}"><span th:text="${prestamo.usuario.nombre} + ' ' + ${prestamo.usuario.apellido} + ' (DNI: ' + ${prestamo.usuario.dni} + ')'" th:title="'Ver Préstamos de ' + ${prestamo.usuario.nombre}"></span></a></td>
+                                <td>
+                                    <i th:if="${prestamo.alta == true}" class="bi bi-circle-fill text-success"
+                                       title="Activo"></i>
+                                    <i th:if="${prestamo.alta == false}" class="bi bi-circle-fill text-danger"
+                                       th:title="'Devuelto el ' + ${prestamo.fechaDevolucion.date} + '/' + ${prestamo.fechaDevolucion.month+1} + '/' + ${prestamo.fechaDevolucion.year+1900}"></i>
+                                    <a th:href="@{/admin/prestamos/eliminar-prestamo/__${prestamo.id}__}"><i class="bi bi-x-circle text-danger" title="Eliminar"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!--FOOTER-->
+                <footer th:replace="/fragments/footer :: footer"></footer>
+            </div>
+    </body>
+</html>

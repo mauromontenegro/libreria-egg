@@ -1,0 +1,81 @@
+<!DOCTYPE html5>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<!--HEAD-->
+<head th:replace="/fragments/head :: head"></head>
+<head>
+    <title>Librería EGG - Modificar Préstamo</title>
+</head>
+    <body>
+        <div id="pagina">
+        <!--NAVIGATION-->
+        <nav th:replace="/fragments/navbar :: nav"></nav>
+            <div id="contenido">
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="bg-dark text-white">Menú Administrativo de Préstamos</h1>
+                        </div>
+                    </div>
+                    <div class="row" style="align-items: center;">
+                        <div th:if="${error != null}" class="col-12 alert alert-danger alert-dismissible fade show" style="height: fit-content" role="alert">
+                            <!--Este if mostrará el texto en el caso de que aparezca un error.-->
+                            <span th:text="${error}" style="color:red;"></span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="container" style="display: flex; flex-direction: row-reverse; align-items: baseline;">
+                            <button class="btn btn-danger" id="btn-orange" type="button" data-toggle="collapse" data-target="#collapse1"
+                                    aria-expanded="false" aria-controls="collapseExample" disabled="">
+                                <i class="bi bi-pencil-square"></i> Modificar Préstamo
+                            </button>
+                        </div>
+
+                        <div class="" id="collapse2" style="width: 100%;">
+                            <div class="card card-body alert alert-dismissible col-12 bg-dark text-white" role="alert">
+                                Ingrese los datos solicitados a continuación:
+                                <div class="registry-form bg-dark text-white">
+                                    <div class="text-justify">
+
+                                        <form action="/admin/prestamos/modificar-prestamo" method="POST" enctype="multipart/form-data">
+
+                                            <input type="hidden" name="id" th:value="${prestamoModif.id}"/>
+                                                
+                                            <label>Fecha de Préstamo (alta)</label>
+                                            <input type="date" class="form-control" name="fechaPrestamo" th:value="${#dates.format(prestamoModif.fechaPrestamo, 'yyyy-MM-dd')}"/>
+                                            <small class="form-text text-muted">Original: <span th:text="${prestamoModif.fechaPrestamo.date} + '/' + ${prestamoModif.fechaPrestamo.month+1} + '/' + ${prestamoModif.fechaPrestamo.year+1900}"></span></small><br>
+
+                                            <label>Fecha de Devolución</label>
+                                            <input type="date" class="form-control" name="fechaDevolucion" th:value="${#dates.format(prestamoModif.fechaDevolucion, 'yyyy-MM-dd')}"/>
+                                            <small class="form-text text-muted">Original: <span th:text="${prestamoModif.fechaDevolucion.date} + '/' + ${prestamoModif.fechaDevolucion.month+1} + '/' + ${prestamoModif.fechaDevolucion.year+1900}"></span></small>
+
+                                            <hr>
+                                            <label>Libro</label>
+                                             <select class="form-control custom-select" name="idLibro">
+                                                <option selected th:value="${prestamoModif.libro.id}" disabled><span th:text="${prestamoModif.libro.titulo}"></span></option>
+                                            </select>
+                                            <small id="idLibroHelp" class="form-text text-muted">No se puede modificar este campo.</small>
+
+                                            <hr>    
+                                            <label>Usuario</label>
+                                             <select class="form-control custom-select" name="idUsuario">
+                                                 <option selected th:value="${prestamoModif.usuario.id}" disabled=""><span th:text="${prestamoModif.usuario.nombre} + ' ' + ${prestamoModif.usuario.apellido}"></span></option>
+                                            </select>
+                                            <small id="idUsuarioHelp" class="form-text text-muted">No se puede modificar este campo.</small><br>
+                                            
+                                            <button type="submit" class="btn btn-secondary" formaction="/admin/prestamos/admin-prestamos" formmethod="GET">Cancelar</button>
+                                            <button type="submit" class="btn btn-success">Modificar Préstamo</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--FOOTER-->
+            <footer th:replace="/fragments/footer :: footer"></footer>
+            </div>
+    </body>
+
+</html>

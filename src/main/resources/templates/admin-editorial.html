@@ -1,0 +1,117 @@
+<!DOCTYPE html5>
+<html lang="es" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+   <!--HEAD-->
+<head th:replace="/fragments/head :: head"></head>
+<head>
+    <title>Librería EGG - Editoriales</title>
+</head>
+    <body>
+        <div id="pagina">
+            <!--NAVIGATION-->
+        <nav th:replace="/fragments/navbar :: nav"></nav>
+            <div id="contenido">
+                <div class="container text-center">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1 class="bg-dark text-white">Menú Administrativo de Editoriales</h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div th:if="${error != null}" class="col-12 alert alert-danger alert-dismissible fade show" id="alert" role="alert">
+                            <!--Este if mostrará el texto en el caso de que aparezca un error.-->
+                            <span th:text="${error}" id="error"></span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div th:if="${success != null}" class="col-12 alert alert-success alert-dismissible fade show" id="alert" role="alert">
+                            <!--Este if mostrará el texto en el caso de que salga todo bien.-->
+                            <span th:text="${success}" id="success"></span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="container" id="menu">
+                            <button class="btn" id="btn-orange" type="button" data-toggle="collapse" data-target="#collapse1"
+                                    aria-expanded="false" aria-controls="collapseExample">
+                                <i class="bi bi-plus-circle-dotted"></i> Nueva Editorial
+                            </button>
+                            <button class="btn" id="btn-orange" type="button" data-toggle="collapse" data-target="#collapsehelp"
+                                    aria-expanded="false" aria-controls="collapseExample">
+                                <span><i class="bi bi-question-circle text-white"></i></span>
+                            </button>
+                        </div>
+                        <div class="collapse card card-body alert alert-dismissible text-justify alert-primary" id="collapsehelp" role="alert">
+                            <ul style="list-style-type:disc;">
+                                <li><strong>Nueva Editorial</strong></li>
+                                <ul>
+                                    <li>En ésta sección podrá cargar todos los datos necesarios para registrar una Editorial en la base de datos.</li>
+                                </ul>
+                            </ul>
+                            <ul style="list-style-type:disc;">
+                                <li><strong>Listar Editoriales + Gestionar</strong></li>
+                                <ul>
+                                    <li><strong>Listar Editoriales</strong> en ésta sección se listan datos de todas las Editorial registradas en la base de datos.</li>
+                                    <li><strong>Gestionar:</strong> se incluyen las funciones de "Dar de baja/alta", "Modificar" y "Eliminar".</li>
+                                    <li><strong><i class="bi bi-exclamation-triangle"></i> Eliminar </strong> una Editorial implica la eliminación de los Libros registrados bajo su nombre y los préstamos en los que el mismo esté registrado.</li>
+                                </ul>
+                            </ul>
+                            <button type="button" class="close" data-toggle="collapse" data-target="#collapsehelp"
+                                    aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="collapse col-12" id="collapse1">
+                            <div class="card card-body alert alert-dismissible bg-dark text-white" role="alert">
+                                Ingrese los datos solicitados a continuación:
+                                <div class="registry-form col-12 text-justify bg-dark text-white">
+                                    <div class="col-12 text-justify">
+                                        <form action="/admin/editoriales/registrar-editorial" method="POST" enctype="multipart/form-data">
+
+                                            <label>Nombre de Editorial</label>
+                                            <input type="text" class="form-control" name="nombre" th:value="${nombre}"/>
+
+                                            <p><br><button type="submit" class="btn btn-success">Guardar Editorial</button></p>
+                                        </form>
+                                    </div>
+                                </div>
+                                <button type="button" class="close" data-toggle="collapse" data-target="#collapse1"
+                                        aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    <table class="table-responsive-lg table-hover table-dark table-bordered">
+                        <thead>
+                            <tr class="bg-danger text-white">
+                                <th>Id</th>
+                                <th>Nombre</th>
+                                <th>Estado / Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="editorial : ${editoriales}">
+                                <td th:text="${editorial.id}"></td>
+                                <td th:text="${editorial.nombre}"></td>
+                                <td>
+                                    <i th:if="${editorial.alta == true}" class="bi bi-circle-fill text-success"
+                                       title="De alta"></i>
+                                    <i th:if="${editorial.alta == false}" class="bi bi-circle-fill text-danger"
+                                       title="De baja"></i>
+                                    <a th:if="${editorial.alta == false}" th:href="@{/admin/editoriales/alta/__${editorial.id}__}"><i class="bi bi-arrow-up-circle text-success" title="Dar de alta"></i></a>
+                                    <a th:if="${editorial.alta == true}" th:href="@{/admin/editoriales/baja/__${editorial.id}__}"><i class="bi bi-arrow-down-circle text-danger" title="Dar de baja"></i></a>
+                                    <a th:href="@{/admin/editoriales/modificar-editorial-datos/__${editorial.id}__}"><i class="bi bi-pencil-square text-danger" title="Editar"></i></a>
+                                    <a th:href="@{/admin/editoriales/eliminar-editorial/__${editorial.id}__}"><i class="bi bi-x-circle text-danger" title="Eliminar"></i></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            <!--FOOTER-->
+            <footer th:replace="/fragments/footer :: footer"></footer>
+            </div>
+    </body>
+</html>
